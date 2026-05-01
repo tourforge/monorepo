@@ -1,2 +1,6 @@
-#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
 #include "Generated.xcconfig"
+
+#include "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
+
+// Support for Profile mode which often shares the Release configuration in Xcode project settings
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"

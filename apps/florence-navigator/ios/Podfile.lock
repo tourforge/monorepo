@@ -14,9 +14,6 @@ PODS:
   - MapLibre (5.13.0)
   - package_info_plus (0.4.5):
     - Flutter
-  - path_provider_foundation (0.0.1):
-    - Flutter
-    - FlutterMacOS
   - sqflite_darwin (0.0.4):
     - Flutter
     - FlutterMacOS
@@ -35,7 +32,6 @@ DEPENDENCIES:
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/darwin`)
   - just_audio (from `.symlinks/plugins/just_audio/darwin`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
-  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
   - tourforge_baseline (from `.symlinks/plugins/tourforge_baseline/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
@@ -58,8 +54,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/just_audio/darwin"
   package_info_plus:
     :path: ".symlinks/plugins/package_info_plus/ios"
-  path_provider_foundation:
-    :path: ".symlinks/plugins/path_provider_foundation/darwin"
   sqflite_darwin:
     :path: ".symlinks/plugins/sqflite_darwin/darwin"
   tourforge_baseline:
@@ -77,12 +71,11 @@ SPEC CHECKSUMS:
   just_audio: a42c63806f16995daf5b219ae1d679deb76e6a79
   MapLibre: 1ed7386635b33f6f3efe33b6ca35281fbe2fb8e0
   package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
-  path_provider_foundation: 0b743cbb62d8e47eab856f09262bb8c1ddcfe6ba
   sqflite_darwin: 5a7236e3b501866c1c9befc6771dfd73ffb8702d
-  tourforge_baseline: 3777c78c1ad4e414d5d4e81eb3f45dc4b862763d
+  tourforge_baseline: a67990a744f95f2f8e5a21715ffc1294ace10d12
   url_launcher_ios: bb13df5870e8c4234ca12609d04010a21be43dfa
   wakelock_plus: 76957ab028e12bfa4e66813c99e46637f367fc7e
 
-PODFILE CHECKSUM: be00e6ab133362739f27a80570c650f259d4e5e3
+PODFILE CHECKSUM: 986f5be54bcd4376e530ac33b74e0fe8dc9f714d
 
 COCOAPODS: 1.16.2

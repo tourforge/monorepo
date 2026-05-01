@@ -34,7 +34,7 @@ target 'Runner' do
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
 
-require_relative '../../../../scripts/common_podfile.rb'
+require_relative '../../../scripts/common_podfile.rb'
 
 post_install do |installer|
   apply_tourforge_configs(installer)
