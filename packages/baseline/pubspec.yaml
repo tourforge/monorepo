@@ -1,0 +1,56 @@
+name: tourforge_baseline
+description: TourForge
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.0
+  flutter: ">=3.27.0"
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+  http: ^1.1.0
+  flutter_map: ^8.2.2
+  google_fonts: ^6.3.3
+  photo_view: ^0.15.0
+  latlong2: ^0.9.0
+  maps_toolkit: ^3.0.0
+  geolocator: ^14.0.2
+  flutter_map_dragmarker: ^8.0.3
+  provider: ^6.0.4
+  flutter_displaymode: ^0.7.0
+  path_provider: ^2.0.11
+  path: ^1.8.2
+  sliver_tools: ^0.2.10
+  url_launcher: ^6.1.10
+  just_audio: ^0.10.5
+  audio_service: ^0.18.12
+  audio_session: ^0.2.2
+  image: ^4.0.17
+  wakelock_plus: ^1.1.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/fonts/Noto Sans Regular/
+    - assets/fonts/Noto Sans Bold/
+    - assets/fonts/Noto Sans Italic/
+
+  plugin:
+    platforms:
+      android:
+        package: org.tourforge.baseline
+        pluginClass: TourForgeBaselinePlugin
+      ios:
+        pluginClass: TourForgeBaselinePlugin

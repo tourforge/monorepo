@@ -1,0 +1,66 @@
+// common.gradle - Shared build specification for TourForge apps
+// This file is maintained at the monorepo root to ensure consistency across consumer apps.
+
+ext.tourforge = [
+    compileSdkVersion: 36,
+    minSdkVersion: 24,
+    ndkVersion: "29.0.14206865",
+    jvmTarget: '1.8',
+    javaVersion: JavaVersion.VERSION_1_8
+]
+
+def applySharedConfig(project) {
+    project.android {
+        compileSdkVersion tourforge.compileSdkVersion
+        ndkVersion tourforge.ndkVersion
+
+        compileOptions {
+            sourceCompatibility tourforge.javaVersion
+            targetCompatibility tourforge.javaVersion
+        }
+
+        kotlinOptions {
+            jvmTarget = tourforge.jvmTarget
+        }
+
+        defaultConfig {
+            minSdkVersion tourforge.minSdkVersion
+            targetSdkVersion tourforge.compileSdkVersion // Usually same as compile
+            
+            ndk {
+                abiFilters 'arm64-v8a', 'x86_64'
+            }
+        }
+
+        packagingOptions {
+            jniLibs {
+                excludes += ['lib/armeabi-v7a/**', 'lib/x86/**']
+            }
+        }
+
+        buildTypes {
+            release {
+                ndk {
+                    debugSymbolLevel 'SYMBOL_TABLE'
+                }
+            }
+        }
+    }
+}
+
+def forceSharedConfig(rootProject) {
+    rootProject.subprojects {
+        project.afterEvaluate {
+            if (project.hasProperty('android')) {
+                project.android {
+                    compileSdkVersion tourforge.compileSdkVersion
+                    ndkVersion tourforge.ndkVersion
+                }
+            }
+        }
+    }
+}
+
+ext.applySharedConfig = this.&applySharedConfig
+ext.forceSharedConfig = this.&forceSharedConfig
+

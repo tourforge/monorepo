@@ -1,0 +1,21 @@
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+apply from: "../../../scripts/common.gradle"
+forceSharedConfig(project)
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(':app')
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}

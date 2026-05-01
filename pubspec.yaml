@@ -1,0 +1,34 @@
+name: tourforge_monorepo
+description: Monorepo for TourForge ecosystem
+publish_to: 'none'
+
+environment:
+  sdk: ^3.6.0
+
+workspace:
+  - apps/baseline-app
+  - apps/florence-navigator
+  - apps/fmu-campus-tour
+  - packages/baseline
+
+dev_dependencies:
+  melos: ^7.0.0
+
+melos:
+  scripts:
+    generate:icons:
+      run: flutter pub run flutter_launcher_icons
+      description: Generate native launcher icons for all apps.
+      exec:
+        concurrency: 1
+    generate:licenses:
+      run: flutter pub run flutter_oss_licenses:generate.dart
+      description: Generate open source license metadata for all apps.
+    test:
+      run: flutter test
+      description: Run Flutter tests in a package.
+  command:
+    bootstrap:
+      usePubspecOverrides: true
+
+
