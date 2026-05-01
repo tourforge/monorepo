@@ -24,7 +24,7 @@ This monorepo is managed by Melos. This format allows for centralized management
 ### Directory Layout
 - packages/baseline: The core Flutter plugin containing the mapping and navigation engine.
 - apps/baseline-app: The reference implementation used for debugging and as a structural template.
-- apps/florence-navigator: A production tour application for Florence, Italy.
+- apps/florence-navigator: A production tour application for Florence, SC.
 - apps/fmu-campus-tour: A production tour application for Francis Marion University.
 - scripts/: Shared build logic for Android (Gradle) and iOS (CocoaPods).
 
