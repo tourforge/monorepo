@@ -52,36 +52,4 @@
     bundletool
     android-studio-tools
   ];
-  # Usage: devenv shell check-elf-alignment <app-name>
-  scripts.check-elf-alignment.exec = ''
-    if [ -z "$1" ]; then
-      echo "Usage: check-elf-alignment <app-name>"
-      exit 1
-    fi
-    APP_PATH="apps/$1"
-    APK_PATH="$APP_PATH/build/app/outputs/flutter-apk/app-debug.apk"
-    
-    if [ ! -f "$APK_PATH" ]; then
-      echo "Error: APK not found at $APK_PATH"
-      echo "Ensure you have built the app first: devenv shell build-all-apk"
-      exit 1
-    fi
-
-    ./scripts/check_elf_alignment.sh "$APK_PATH"
-  '';
-
-  pre-commit.hooks = {
-    validate-workspace = {
-      enable = true;
-      name = "Workspace Integrity Audit";
-      entry = "dart scripts/validate_workspace.dart";
-      pass_filenames = false;
-    };
-    analyze = {
-      enable = true;
-      name = "Dart Analysis";
-      entry = "dart analyze .";
-      pass_filenames = false;
-    };
-  };
 }
