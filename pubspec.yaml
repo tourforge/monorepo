@@ -16,6 +16,9 @@ dev_dependencies:
 
 melos:
   scripts:
+    validate:
+      run: dart scripts/validate_workspace.dart
+      description: Run the workspace integrity audit.
     generate:icons:
       run: flutter pub run flutter_launcher_icons
       description: Generate native launcher icons for all apps.
