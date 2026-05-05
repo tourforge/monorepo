@@ -51,10 +51,10 @@ class _WaypointDetailsState extends State<WaypointDetails>
                     }
                   },
                   style: ButtonStyle(
-                    backgroundColor: MaterialStatePropertyAll(
+                    backgroundColor: WidgetStatePropertyAll(
                         Theme.of(context).colorScheme.secondary),
-                    padding: const MaterialStatePropertyAll(EdgeInsets.zero),
-                    shape: const MaterialStatePropertyAll(
+                    padding: const WidgetStatePropertyAll(EdgeInsets.zero),
+                    shape: const WidgetStatePropertyAll(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(12.0)),
                       ),

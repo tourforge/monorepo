@@ -66,8 +66,8 @@ class _TourDetailsState extends State<TourDetails>
           Navigator.of(context).push(NavigationRoute(widget.tour));
         },
         style: const ButtonStyle(
-            padding: MaterialStatePropertyAll(EdgeInsets.zero),
-            shape: MaterialStatePropertyAll(
+            padding: WidgetStatePropertyAll(EdgeInsets.zero),
+            shape: WidgetStatePropertyAll(
               RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(12.0)),
               ),
@@ -146,9 +146,7 @@ class _TourDetailsState extends State<TourDetails>
 }
 
 class _TourHelpScreen extends StatefulWidget {
-  const _TourHelpScreen({
-    super.key,
-  });
+  const _TourHelpScreen();
 
   @override
   State<_TourHelpScreen> createState() => _TourHelpScreenState();
@@ -214,9 +212,7 @@ class _TourHelpScreenState extends State<_TourHelpScreen> {
 }
 
 class TourNotDownloadedWarning extends StatelessWidget {
-  const TourNotDownloadedWarning({
-    super.key,
-  });
+  const TourNotDownloadedWarning();
 
   @override
   Widget build(BuildContext context) {
@@ -253,7 +249,6 @@ class TourNotDownloadedWarning extends StatelessWidget {
 
 class _DownloadButton extends StatefulWidget {
   const _DownloadButton({
-    super.key,
     required this.tour,
     required this.onDownloaded,
   });
@@ -346,11 +341,11 @@ class _DownloadButtonState extends State<_DownloadButton> {
         ElevatedButton(
           onPressed: _download,
           style: const ButtonStyle(
-            backgroundColor: MaterialStatePropertyAll(Colors.transparent),
-            shadowColor: MaterialStatePropertyAll(Colors.transparent),
-            foregroundColor: MaterialStatePropertyAll(Colors.white),
-            padding: MaterialStatePropertyAll(EdgeInsets.zero),
-            shape: MaterialStatePropertyAll(
+            backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+            shadowColor: WidgetStatePropertyAll(Colors.transparent),
+            foregroundColor: WidgetStatePropertyAll(Colors.white),
+            padding: WidgetStatePropertyAll(EdgeInsets.zero),
+            shape: WidgetStatePropertyAll(
               RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(12.0)),
               ),

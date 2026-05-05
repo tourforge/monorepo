@@ -87,7 +87,7 @@ class _OnboardingState extends State<Onboarding> {
               child: ElevatedButton(
                 onPressed: _controller.nextSlide,
                 style: ButtonStyle(
-                  backgroundColor: MaterialStatePropertyAll(
+                  backgroundColor: WidgetStatePropertyAll(
                       Theme.of(context).colorScheme.secondary),
                 ),
                 child: Text(

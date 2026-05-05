@@ -10,9 +10,7 @@ const lightColorScheme = ColorScheme(
   onSecondary: Color.fromARGB(255, 211, 233, 255),
   error: Colors.red,
   onError: Colors.white,
-  background: Color.fromARGB(255, 248, 248, 248),
-  onBackground: Colors.black,
-  surface: Colors.white,
+  surface: Color.fromARGB(255, 248, 248, 248),
   onSurface: Colors.black,
   surfaceTint: Colors.transparent,
 );
@@ -26,9 +24,7 @@ const darkColorScheme = ColorScheme(
   onSecondary: Color.fromARGB(255, 211, 233, 255),
   error: Colors.red,
   onError: Colors.white,
-  background: Color.fromARGB(255, 32, 32, 32),
-  onBackground: Colors.white,
-  surface: Color.fromARGB(255, 42, 42, 42),
+  surface: Color.fromARGB(255, 32, 32, 32),
   onSurface: Colors.white,
   surfaceTint: Colors.transparent,
 );
@@ -41,14 +37,14 @@ ThemeData get lightThemeData => ThemeData(
       useMaterial3: true,
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
-          padding: MaterialStateProperty.all(
+          padding: WidgetStateProperty.all(
             const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
           ),
-          backgroundColor: MaterialStateProperty.all(lightColorScheme.primary),
+          backgroundColor: WidgetStateProperty.all(lightColorScheme.primary),
           foregroundColor:
-              MaterialStateProperty.all(lightColorScheme.onPrimary),
-          overlayColor: MaterialStateProperty.all(const Color(0x20FFFFFF)),
-          shape: MaterialStateProperty.all(
+              WidgetStateProperty.all(lightColorScheme.onPrimary),
+          overlayColor: WidgetStateProperty.all(const Color(0x20FFFFFF)),
+          shape: WidgetStateProperty.all(
             const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(16.0)),
             ),
@@ -127,13 +123,13 @@ ThemeData get darkThemeData => ThemeData(
       useMaterial3: true,
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
-          padding: MaterialStateProperty.all(
+          padding: WidgetStateProperty.all(
             const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
           ),
-          backgroundColor: MaterialStateProperty.all(darkColorScheme.primary),
-          foregroundColor: MaterialStateProperty.all(darkColorScheme.onPrimary),
-          overlayColor: MaterialStateProperty.all(const Color(0x20FFFFFF)),
-          shape: MaterialStateProperty.all(
+          backgroundColor: WidgetStateProperty.all(darkColorScheme.primary),
+          foregroundColor: WidgetStateProperty.all(darkColorScheme.onPrimary),
+          overlayColor: WidgetStateProperty.all(const Color(0x20FFFFFF)),
+          shape: WidgetStateProperty.all(
             const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(16.0)),
             ),

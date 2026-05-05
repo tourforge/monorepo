@@ -292,8 +292,8 @@ class LinkModel {
 /// 3. **Cache Invalidation:** Updating an asset automatically changes its hash,
 ///    triggering a new download without complex cache-clearing logic.
 class AssetModel {
-  AssetModel._fromName(this.name, Map<String, AssetInfo> assetsMap, {this.required = true}) : id = assetsMap[name]!.hash, alt = assetsMap[name]!.alt, attrib = assetsMap[name]!.attrib;
-  AssetModel._fromId(this.id, {this.required = true}) : name = "", alt = "", attrib = "";
+  AssetModel._fromName(this.name, Map<String, AssetInfo> assetsMap) : id = assetsMap[name]!.hash, alt = assetsMap[name]!.alt, attrib = assetsMap[name]!.attrib, required = true;
+  AssetModel._fromId(this.id) : name = "", alt = "", attrib = "", required = true;
 
   final String name;
   final String id;
@@ -318,11 +318,6 @@ class AssetMeta {
     required this.alt,
     required this.attribution,
   });
-
-  static AssetMeta _parse(dynamic json) => AssetMeta._(
-        alt: json["alt"],
-        attribution: json["attrib"],
-      );
 
   final String? alt;
   final String? attribution;

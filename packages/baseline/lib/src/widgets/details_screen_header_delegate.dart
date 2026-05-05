@@ -28,7 +28,10 @@ class DetailsScreenHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   double get minExtent =>
-      MediaQueryData.fromWindow(ui.window).padding.top + kToolbarHeight;
+      MediaQueryData.fromView(ui.PlatformDispatcher.instance.implicitView!)
+          .padding
+          .top +
+      kToolbarHeight;
 
   @override
   TickerProvider get vsync => tickerProvider;
@@ -75,7 +78,7 @@ class DetailsScreenHeaderDelegate extends SliverPersistentHeaderDelegate {
         ),
         if (onHelpPressed != null)
           Positioned(
-            top: MediaQueryData.fromWindow(ui.window).padding.top,
+            top: MediaQuery.paddingOf(context).top,
             right: 0,
             child: IconButton(
               tooltip: "Help",
@@ -99,7 +102,7 @@ class DetailsScreenHeaderDelegate extends SliverPersistentHeaderDelegate {
             ),
           ),
         Positioned(
-          top: MediaQueryData.fromWindow(ui.window).padding.top,
+          top: MediaQuery.paddingOf(context).top,
           left: 0,
           child: IconButton(
             onPressed: null,
@@ -129,7 +132,7 @@ class DetailsScreenHeaderDelegate extends SliverPersistentHeaderDelegate {
           ),
         ),
         Positioned(
-          top: MediaQueryData.fromWindow(ui.window).padding.top,
+          top: MediaQuery.paddingOf(context).top,
           left: 0,
           child: IconButton(
             onPressed: () {
@@ -152,7 +155,6 @@ class DetailsScreenHeaderDelegate extends SliverPersistentHeaderDelegate {
 
 class _DetailsScreenHeader extends StatelessWidget {
   const _DetailsScreenHeader({
-    super.key,
     required this.shrinkFactor,
     required this.title,
     this.action,
