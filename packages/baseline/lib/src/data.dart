@@ -12,15 +12,29 @@ import 'package:path/path.dart' as p;
 import 'asset_image.dart';
 import 'download_manager.dart';
 
+/// The root data container for the TourForge ecosystem.
+///
+/// This class handles the bootstrap loading of the `tourforge.json` index file,
+/// which defines all available tours and their associated assets.
+///
+/// ### Technical Note: Bootstrapping
+/// The index itself is treated as a versioned asset. On load, the engine
+/// attempts to fetch the latest index from the server. If the network is
+/// unavailable, it falls back to a locally cached version, ensuring offline
+/// functionality.
 class Project {
   Project._({
     required this.tours,
     required this.assets,
   });
 
+  /// An immutable list of available tours.
   final List<TourModel> tours;
+
+  /// A map of all unique assets in the project, indexed by their ID.
   final Map<String, AssetInfo> assets;
 
+  /// Loads and parses the project configuration.
   static Future<Project> load() async {
     var tourforgeJsonFile = AssetModel._fromId("tourforge.json").downloadedFile;
     var preexistingIndexExists = await tourforgeJsonFile.exists();
@@ -55,6 +69,10 @@ class Project {
     return idx;
   }
 
+  /// Parses the raw JSON into an immutable object tree.
+  ///
+  /// Uses [Map.unmodifiable] and [List.unmodifiable] to ensure the data model
+  /// is thread-safe and protected from accidental mutation.
   static Project parse(dynamic json) {
     Map<String, AssetInfo> assetsMap = Map.unmodifiable((json["assets"] as Map<String, dynamic>).map<String, AssetInfo>((key, value) => MapEntry<String, AssetInfo>(key, AssetInfo._parse(value))));
     return Project._(
@@ -67,6 +85,7 @@ class Project {
   }
 }
 
+/// Metadata for a specific binary asset.
 class AssetInfo {
   AssetInfo._({
     required this.alt,
@@ -88,6 +107,7 @@ class AssetInfo {
   );
 }
 
+/// Represents a single tour route and its associated metadata.
 class TourModel {
   TourModel._({
     required this.id,
@@ -102,6 +122,14 @@ class TourModel {
     required this.type,
   });
 
+  /// Parses a tour from JSON.
+  ///
+  /// ### Technical Depth: Path Compression
+  /// The [path] (route polyline) is encoded using the **Google Encoded Polyline Algorithm**.
+  /// This is a lossy compression format that converts a series of coordinates into
+  /// an ASCII string, significantly reducing the size of the JSON payload.
+  ///
+  /// *Reference:* "Encoded Polyline Algorithm Format", Google Maps Platform.
   static TourModel parse(dynamic json, Map<String, AssetInfo> assetsMap) => TourModel._(
         id: json["id"],
         title: json["title"]! as String,
@@ -135,9 +163,11 @@ class TourModel {
   final Map<String, LinkModel> links;
   final String type;
 
+  /// Returns a deduplicated set of all assets required for this tour.
   Iterable<AssetModel> get allAssets =>
       HashSet<AssetModel>.from(_allAssets().followedBy(_allAssets()));
 
+  /// Checks if all mandatory assets (narration, images, tiles) are present locally.
   Future<bool> isFullyDownloaded() async {
     for (final asset in allAssets) {
       if (asset.required && !await asset.isDownloaded) return false;
@@ -250,6 +280,17 @@ class LinkModel {
   final String href;
 }
 
+/// A reference to a binary asset (image, audio, tiles).
+///
+/// ### Architecture: Content-Addressable Storage
+/// Assets are identified by their [id] (a cryptographic hash of the content).
+/// This provides several advantages:
+/// 1. **Deduplication:** If two tours share the same image, it is only
+///    downloaded and stored once.
+/// 2. **Integrity:** The engine can verify that a downloaded file is correct by
+///    re-hashing it and comparing it to the [id].
+/// 3. **Cache Invalidation:** Updating an asset automatically changes its hash,
+///    triggering a new download without complex cache-clearing logic.
 class AssetModel {
   AssetModel._fromName(this.name, Map<String, AssetInfo> assetsMap, {this.required = true}) : id = assetsMap[name]!.hash, alt = assetsMap[name]!.alt, attrib = assetsMap[name]!.attrib;
   AssetModel._fromId(this.id, {this.required = true}) : name = "", alt = "", attrib = "";

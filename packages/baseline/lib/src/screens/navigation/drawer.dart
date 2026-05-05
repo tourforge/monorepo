@@ -7,6 +7,13 @@ import '../../models/current_waypoint.dart';
 import '../../data.dart';
 import '../../widgets/waypoint_card.dart';
 
+/// The interactive bottom sheet interface for route progression.
+///
+/// The `TourNavigationDrawer` displays the sequential list of waypoints in a
+/// draggable bottom sheet. It listens to the [CurrentWaypointModel] to visually
+/// highlight the user's active stop. It also serves as a manual override,
+/// allowing users to tap ahead or skip waypoints, which triggers the
+/// `playWaypoint` callback to update the audio and map state.
 class TourNavigationDrawer extends StatefulWidget {
   const TourNavigationDrawer({
     super.key,

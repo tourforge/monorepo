@@ -12,17 +12,28 @@ import 'package:path_provider/path_provider.dart';
 import '../../math.dart';
 import '../../data.dart';
 
+/// An imperative controller for the native MapLibre map instance.
+///
+/// This controller leverages [MethodChannel] to send commands to the native
+/// platform view.
 class MapLibreMapController {
   late final _MapLibreMapState _state;
 
+  /// Toggles between vector-styled street view and TomTom satellite imagery.
   bool get satelliteEnabled => _state._satelliteEnabled;
   set satelliteEnabled(bool value) {
     _state._satelliteEnabled = value;
 
+    // We switch the style by providing a file URI to a locally-generated JSON style.
     _MapLibreMapState._channel.invokeMethod<void>("setStyle",
         _state._satelliteEnabled ? _state.satStylePath : _state.stylePath);
   }
 
+  /// Sends a GeoJSON FeatureCollection to the native map to update the user's
+  /// location indicator.
+  ///
+  /// Using GeoJSON as a data interchange format allows us to leverage the
+  /// native MapLibre GeoJSONSource, which is highly optimized for frequent updates.
   void updateLocation(LatLng location) {
     _MapLibreMapState._channel.invokeMethod<void>(
       "updateLocation",
@@ -41,18 +52,29 @@ class MapLibreMapController {
     );
   }
 
+  /// Commands the native map to animate the camera to a new coordinate.
   void moveCamera(LatLng where) {
     _MapLibreMapState._channel.invokeMethod<void>(
       "moveCamera",
       {
         "lat": where.latitude,
         "lng": where.longitude,
-        "duration": 1500,
+        "duration": 1500, // Duration in milliseconds.
       },
     );
   }
 }
 
+/// A specialized widget that embeds a native MapLibre map using Platform Views.
+///
+/// ### Architecture: Platform Views
+/// To achieve maximum performance and access to hardware-accelerated GL rendering,
+/// we use [AndroidView] and [UiKitView]. This embeds a native view into the
+/// Flutter widget tree.
+///
+/// **Performance Note:** Platform Views have overhead due to texture sharing or
+/// view layering. For high-performance mapping, we minimize full-widget rebuilds
+/// and communicate primarily via [MethodChannel].
 class MapLibreMap extends StatefulWidget {
   const MapLibreMap({
     super.key,
@@ -82,6 +104,8 @@ class MapLibreMap extends StatefulWidget {
 }
 
 class _MapLibreMapState extends State<MapLibreMap> {
+  /// The control channel for the MapLibre plugin.
+  /// This must match the string defined in the native Java/Swift implementation.
   static const _channel = MethodChannel("tourforge.org/baseline/map");
 
   late final String stylePath;
@@ -98,8 +122,10 @@ class _MapLibreMapState extends State<MapLibreMap> {
 
     widget.controller._state = this;
 
+    // Style generation is an asynchronous I/O-bound task.
     buildStyle = _createStyle();
 
+    // Register a handler for messages sent from the native code to Dart.
     _channel.setMethodCallHandler((call) async {
       switch (call.method) {
         case "updateCameraPosition":
@@ -133,6 +159,23 @@ class _MapLibreMapState extends State<MapLibreMap> {
     zoom = _calculateTourZoom(widget.tour);
   }
 
+  /// Generates the MapLibre GL Style JSON files required for the session.
+  ///
+  /// ### Technical Depth: Style Orchestration
+  /// MapLibre styles are complex JSON objects that define data sources,
+  /// layer ordering, and visual styling (colors, widths, icons). Since our
+  /// assets (fonts, icons, MBTiles) are stored in the Flutter asset bundle,
+  /// they are not directly accessible via standard file paths to the native
+  /// MapLibre engine.
+  ///
+  /// **The Solution:**
+  /// 1. **Extract Assets:** We copy PBF fonts, PNG sprites, and MBTiles from
+  ///    the Flutter app bundle to the device's temporary directory.
+  /// 2. **Dynamic Injection:** We read the base style JSON and replace template
+  ///    URLs with "file://" URIs pointing to these extracted files.
+  /// 3. **Offline Tiles:** We inject "mbtiles://" URIs, which our native
+  ///    implementation (via MapLibre Custom Source) uses to serve vector tiles
+  ///    locally without a network connection.
   Future<String> _createStyle() async {
     try {
       final spritePath = p.join((await getTemporaryDirectory()).path, "sprite");
@@ -205,6 +248,7 @@ class _MapLibreMapState extends State<MapLibreMap> {
       var style = jsonDecode(styleText);
       var satStyle = jsonDecode(satStyleText);
 
+      // Inject local URIs into the style JSON.
       satStyle["glyphs"] =
           style["glyphs"] = "file://$fontsBasePath/{fontstack}/{range}.pbf";
       satStyle["sprite"] = "file://$spriteSatPath";
@@ -298,6 +342,7 @@ class _MapLibreMapState extends State<MapLibreMap> {
   }
 }
 
+/// Converts a coordinate list into a GeoJSON LineString for native rendering.
 String _pathToGeoJson(List<LatLng> path) {
   return jsonEncode({
     "type": "FeatureCollection",
@@ -315,6 +360,7 @@ String _pathToGeoJson(List<LatLng> path) {
   });
 }
 
+/// Converts waypoints into a GeoJSON FeatureCollection with numeric labels.
 String _waypointsToGeoJson(List<WaypointModel> waypoints) {
   return jsonEncode({
     "type": "FeatureCollection",
@@ -332,6 +378,7 @@ String _waypointsToGeoJson(List<WaypointModel> waypoints) {
   });
 }
 
+/// Converts POIs into a GeoJSON FeatureCollection.
 String _poisToGeoJson(List<PoiModel> pois) {
   return jsonEncode({
     "type": "FeatureCollection",
@@ -349,11 +396,20 @@ String _poisToGeoJson(List<PoiModel> pois) {
   });
 }
 
+/// Computes an optimal zoom level to fit all tour waypoints.
+///
+/// ### Mathematical Logic
+/// We use a logarithmic mapping between the spatial extent (max distance from
+/// center) and the MapLibre zoom level. The formula:
+/// `zoom = -log(radius) / ln2 + C`
+/// maps a radius in meters to a zoom level where 1 unit of zoom represents a
+/// doubling/halving of visual scale.
 double _calculateTourZoom(TourModel tour) {
   var distance = const Distance();
   var center = averagePoint(tour.route.map((w) => LatLng(w.lat, w.lng)));
   var minRadius = tour.route
       .map((w) => distance(LatLng(w.lat, w.lng), center))
       .reduce(max);
+  // 25.25 is an empirical constant adjusted for typical mobile screen densities.
   return max(-log(minRadius) / ln2 + 25.25 - 1.5, 1);
 }

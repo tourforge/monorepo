@@ -13,6 +13,10 @@ import '../../models/map_controlledness.dart';
 import '../../models/satellite_enabled.dart';
 import 'maplibre_map.dart';
 
+/// An imperative controller for the [NavigationMap] widget.
+///
+/// Provides methods to manipulate the camera state (e.g., panning) from outside
+/// the widget tree, acting as a bridge to the underlying [MapLibreMapController].
 class NavigationMapController {
   NavigationMapState? _state;
 
@@ -25,6 +29,12 @@ class NavigationMapController {
   }
 }
 
+/// The top-level mapping widget for the navigation experience.
+///
+/// `NavigationMap` serves as a compositional wrapper. It embeds the high-performance
+/// native [MapLibreMap] for rendering tiles and polylines, while simultaneously
+/// managing custom Flutter overlays (like the animated user location puck)
+/// using position streams from [CurrentLocationModel].
 class NavigationMap extends StatefulWidget {
   const NavigationMap({
     super.key,

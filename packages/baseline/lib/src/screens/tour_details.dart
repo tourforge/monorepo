@@ -13,6 +13,13 @@ import '../widgets/waypoint_card.dart';
 import 'help_slides.dart';
 import 'navigation/navigation.dart';
 
+/// The preview screen for a specific tour and gateway to navigation mode.
+///
+/// This screen displays the tour's description, gallery, and POI waypoints.
+/// Crucially, it acts as a gatekeeper: it queries the [DownloadManager] to
+/// determine if all required assets (audio, tiles, images) are cached locally.
+/// If not, it presents a [MultiDownload] progress UI. It only permits navigation
+/// to the [NavigationScreen] once offline capability is guaranteed.
 class TourDetails extends StatefulWidget {
   const TourDetails(this.tour, {super.key});
 

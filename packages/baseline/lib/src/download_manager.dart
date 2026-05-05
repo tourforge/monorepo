@@ -8,12 +8,31 @@ import 'package:path/path.dart' as p;
 
 import 'data.dart';
 
+/// Exception thrown when a network request fails during an asset download.
 class DownloadFailedException implements Exception {
   DownloadFailedException(this.response);
 
+  /// The HTTP response that caused the failure, if available.
   final HttpClientResponse? response;
 }
 
+/// A robust asset synchronization engine responsible for local caching and
+/// remote asset retrieval.
+///
+/// ### Resiliency & Fault Tolerance
+/// The [DownloadManager] implements several enterprise-grade patterns:
+///
+/// 1. **Atomic File Operations:** Files are downloaded with a `.part` extension.
+///    Only upon successful completion (verified by the HTTP stream closing
+///    without error) is the file renamed to its final target. This prevents
+///    "poisoning" the local cache with partial or corrupted assets.
+/// 2. **Exponential Backoff with Jitter:** When a request fails, the manager
+///    waits for a duration that doubles with each attempt. A "jitter" coefficient
+///    (randomness) is added to prevent the "Thundering Herd" problem, where
+///    many clients retry simultaneously and overwhelm the server.
+/// 3. **Deduplication:** A request for an asset that is already being downloaded
+///    will return the existing [Download] future/stream rather than initiating
+///    a redundant connection.
 class DownloadManager {
   DownloadManager(this.localBaseFut, this.networkBaseFut) {
     localBaseFut.then((value) => localBase = value);
@@ -22,9 +41,15 @@ class DownloadManager {
 
   static late final DownloadManager instance;
 
+  /// The local directory path where assets are stored.
   final Future<String> localBaseFut;
+
+  /// The remote base URL for asset retrieval.
   final Future<String> networkBaseFut;
+
+  /// Tracks active downloads to enable deduplication.
   final Map<String, Download> _currentDownloads = {};
+
   final Set<String> _downloadedAssetNames = {};
 
   late final String localBase;
@@ -40,6 +65,10 @@ class DownloadManager {
   /// is actually downloaded.
   bool cachedIsDownloaded(String path) => _downloadedAssetNames.contains(path);
 
+  /// Orchestrates the parallel download of multiple assets.
+  ///
+  /// This returns a [MultiDownload] which aggregates the progress of all
+  /// underlying download streams.
   MultiDownload downloadAll(Iterable<AssetModel> assets,
       [Sink<DownloadProgress>? downloadProgress]) {
     var downloads = <Download>[];
@@ -50,9 +79,14 @@ class DownloadManager {
     return MultiDownload.of(downloads);
   }
 
-  /// Downloads the asset with the given `path`. If there is already a download
-  /// in progress for that asset, that download object is returned. Retries with
-  /// exponential backoff in the case of network error.
+  /// Initiates a download for a specific asset with retry logic.
+  ///
+  /// ### Technical Details: Exponential Backoff
+  /// The wait time `retryIn` is calculated as:
+  /// `(random_jitter + 0.5) * base_delay * 2^attempt`
+  ///
+  /// This ensures that retries are spread out over time, increasing the
+  /// probability of recovery from transient network issues.
   Download download(AssetModel asset,
       {bool reDownload = false, int? maxRetries}) {
     var name = asset.id;
@@ -96,6 +130,7 @@ class DownloadManager {
 
             // successfully downloaded!
             await downloadProgress.close();
+            // Atomic swap: move the .part file to the final destination.
             await File(partPath).rename(outPath);
 
             _markDownloaded(name);
@@ -124,6 +159,11 @@ class DownloadManager {
     );
   }
 
+  /// Low-level HTTP stream handling.
+  ///
+  /// This method pipes the [HttpClientResponse] stream directly into a
+  /// [File.openWrite] sink while emitting progress updates. Direct streaming
+  /// is memory-efficient as it avoids loading the entire asset into RAM.
   Future<void> _attemptDownload(
       Uri srcUri, File outFile, Sink<DownloadProgress> progress) async {
     var client = HttpClient();
@@ -181,6 +221,7 @@ class DownloadManager {
   }
 }
 
+/// Represents a single active download task.
 class Download {
   const Download({
     required this.downloadProgress,
@@ -194,12 +235,17 @@ class Download {
   final Future<File> file;
 }
 
+/// Aggregates multiple [Download] tasks into a single progress tracker.
 class MultiDownload {
   MultiDownload({
     required this.downloadProgress,
     required this.completed,
   });
 
+  /// Creates a [MultiDownload] from a list of active downloads.
+  ///
+  /// This factory listens to all sub-streams and calculates the total
+  /// downloaded bytes vs total expected bytes across the entire set.
   factory MultiDownload.of(List<Download> downloads) {
     var controller = StreamController<DownloadProgress>.broadcast();
 
@@ -228,6 +274,7 @@ class MultiDownload {
   final Future<void> completed;
 }
 
+/// Data class representing the progress of one or more file downloads.
 class DownloadProgress {
   const DownloadProgress({
     this.totalDownloadSize,
@@ -240,6 +287,7 @@ class DownloadProgress {
   /// Total number of bytes downloaded so far.
   final int downloadedSize;
 
+  /// Aggregates a collection of progress updates into a single total.
   static DownloadProgress all(Iterable<DownloadProgress> progresses) =>
       progresses.reduce(
         (a, b) => DownloadProgress(

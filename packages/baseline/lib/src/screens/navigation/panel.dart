@@ -7,6 +7,12 @@ import '../../controllers/narration_playback.dart';
 import '../../models/current_waypoint.dart';
 import '../../data.dart';
 
+/// The persistent media control interface during active navigation.
+///
+/// This panel remains anchored to the bottom of the screen. It binds to the
+/// [NarrationPlaybackController]'s streams (`onStateChanged` and `onPositionChanged`)
+/// to render real-time playback controls (Play/Pause, Skip) and a progress
+/// scrubber for the currently active audio narration.
 class NavigationPanel extends StatelessWidget {
   const NavigationPanel({
     Key? key,

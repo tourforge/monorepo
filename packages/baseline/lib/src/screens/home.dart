@@ -7,6 +7,12 @@ import '/src/screens/tour_details.dart';
 import '/src/widgets/asset_image_builder.dart';
 import 'about.dart';
 
+/// The root entry point of the TourForge UI catalog.
+///
+/// This screen acts as the primary interface for users to browse available tours.
+/// It uses a [FutureBuilder] to asynchronously parse the `tourforge.json`
+/// manifest (via [Project.load]) and renders the decoded [TourModel]s into
+/// a scrollable list.
 class Home extends StatefulWidget {
   const Home({super.key});
 
