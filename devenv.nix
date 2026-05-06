@@ -10,20 +10,6 @@
     jdk.package = lib.mkForce pkgs.jdk17;
   };
 
-  scripts.create-emulator.exec = "avdmanager create avd --force --name TourForge_AVD --package 'system-images;android-35;google_apis_playstore;arm64-v8a'";
-  
-  enterShell = ''
-    # Check for the emulator after the environment is fully initialized
-    if command -v emulator >/dev/null; then
-      if ! emulator -list-avds 2>/dev/null | grep -q "TourForge_AVD"; then
-        echo ""
-        echo "⚠️  TourForge_AVD not found."
-        echo "   Run 'create-emulator' to initialize the project-standard emulator."
-        echo ""
-      fi
-    fi
-  '';
-
   packages = with pkgs; [
     git
     ripgrep
